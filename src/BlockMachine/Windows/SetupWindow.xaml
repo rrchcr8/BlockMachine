@@ -1,0 +1,102 @@
+<Window x:Class="BlockMachine.Windows.SetupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Block Machine - Configuración inicial"
+        Height="760"
+        Width="620"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Bienvenido a Block Machine"
+                       FontSize="24"
+                       FontWeight="SemiBold"/>
+            <TextBlock Grid.Row="1"
+                       Text="Configura el bloqueo nocturno. Solo tú conocerás la contraseña de administrador."
+                       TextWrapping="Wrap"
+                       Foreground="#666"
+                       Margin="0,8,0,20"/>
+
+            <GroupBox Grid.Row="2" Header="Horario de bloqueo" Padding="12" Margin="0,0,0,16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="Desde (HH:mm)" Margin="0,0,0,4"/>
+                        <TextBox x:Name="StartTimeBox" Text="02:00" Height="32"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Hasta (HH:mm)" Margin="0,0,0,4"/>
+                        <TextBox x:Name="EndTimeBox" Text="07:00" Height="32"/>
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
+
+            <GroupBox Grid.Row="3" Header="Mensajes preconfigurados" Padding="12" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Se instalarán 4 mensajes sobre diabetes, glaucoma, descanso y cuidado familiar. Rotarán cada 30 segundos en modo presentación."
+                               TextWrapping="Wrap"
+                               Foreground="#666"
+                               Margin="0,0,0,12"/>
+                    <TextBlock x:Name="MessagesPreviewText"
+                               TextWrapping="Wrap"
+                               FontSize="13"
+                               LineHeight="20"
+                               Foreground="#333"/>
+                    <TextBlock Text="Podrás editarlos después desde el panel de administración."
+                               Foreground="#888"
+                               FontSize="12"
+                               Margin="0,10,0,0"/>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Grid.Row="4" Header="Contraseña de administrador" Padding="12" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Esta contraseña desbloquea la PC y abre el panel de administración."
+                               TextWrapping="Wrap"
+                               Foreground="#666"
+                               Margin="0,0,0,8"/>
+                    <PasswordBox x:Name="PasswordBox" Height="32" Margin="0,0,0,8"/>
+                    <PasswordBox x:Name="ConfirmPasswordBox" Height="32"/>
+                </StackPanel>
+            </GroupBox>
+
+            <StackPanel Grid.Row="5" Margin="0,0,0,12">
+                <CheckBox x:Name="StartupCheckBox"
+                          Content="Iniciar automáticamente con Windows (recomendado)"
+                          IsChecked="True"
+                          Margin="0,0,0,8"/>
+                <CheckBox x:Name="DesktopShortcutCheckBox"
+                          Content="Crear acceso directo en el escritorio: Block Machine - Administración"
+                          IsChecked="True"/>
+            </StackPanel>
+
+            <TextBlock x:Name="StatusText"
+                       Grid.Row="6"
+                       Foreground="#C0392B"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,12"/>
+
+            <Button Grid.Row="7"
+                    Content="Guardar y activar"
+                    Height="40"
+                    FontSize="15"
+                    IsDefault="True"
+                    Click="Save_Click"/>
+        </Grid>
+    </ScrollViewer>
+</Window>
