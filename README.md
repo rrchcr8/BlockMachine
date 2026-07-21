@@ -18,7 +18,15 @@ cd "Block Machine v2"
 dotnet run --project src/BlockMachine
 ```
 
-### Opción B: Instalador automático (recomendado)
+### Descarga directa (PC de tu papá)
+
+1. Descarga **`BlockMachine-win-x64.zip`** desde la raíz del repo en GitHub
+2. Extrae todo en `C:\BlockMachine\`
+3. Ejecuta `BlockMachine.exe` (o usa `instalar.bat` si tienes el repo completo)
+
+> No uses el `BlockMachine.exe` suelto antiguo: era single-file y falla en otras PCs. Usa siempre el `.zip`.
+
+### Opción B: Instalador automático (desde código fuente)
 
 Desde la carpeta del proyecto, **doble clic** en `instalar.bat` o ejecuta en terminal:
 
@@ -27,24 +35,24 @@ instalar.bat --compilar
 ```
 
 El script:
-1. Compila el `.exe` (con `--compilar`) o usa uno ya generado
+1. Compila la app (con `--compilar`) o usa una carpeta `publish` ya generada
 2. Crea `C:\BlockMachine\`
-3. Copia `BlockMachine.exe` ahí
+3. Copia **BlockMachine.exe y todas las librerías** necesarias
 4. Abre el asistente inicial para que configures contraseña e inicio con Windows
 
-> No requiere permisos de administrador. No usa `Program Files`.
+> No requiere permisos de administrador. No uses solo el `.exe` suelto: WPF necesita las DLLs de la carpeta `publish`.
 
-### Opción C: Publicar manualmente un .exe
+### Opción C: Publicar manualmente
 
 ```bash
-dotnet publish src/BlockMachine -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
+dotnet publish src/BlockMachine -c Release
 ```
 
-El ejecutable quedará en:
+Los archivos quedarán en:
 
-`src/BlockMachine/bin/Release/net10.0-windows/win-x64/publish/BlockMachine.exe`
+`src/BlockMachine/bin/Release/net10.0-windows/win-x64/publish/`
 
-Luego ejecuta `instalar.bat` (sin `--compilar` si el exe ya existe) o copia el `.exe` a `C:\BlockMachine\` y ábrelo una vez.
+Copia **toda esa carpeta** a `C:\BlockMachine\` (o ejecuta `instalar.bat`).
 
 **Pasos en el asistente inicial:**
 
@@ -135,6 +143,14 @@ Variables en el texto:
 ## Dónde guarda la configuración
 
 `%AppData%\BlockMachine\config.json`
+
+## Solución de problemas
+
+### Error al abrir: `DllNotFoundException` / Evento 1026 (.NET Runtime)
+
+Ocurre si copiaste **solo** `BlockMachine.exe` sin las DLLs de la carpeta `publish`. Es un límite conocido de apps WPF empaquetadas en un solo archivo.
+
+**Solución:** instala con `instalar.bat` o copia **toda** la carpeta `publish` a `C:\BlockMachine\`.
 
 ## Limitaciones del MVP
 

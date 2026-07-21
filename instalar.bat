@@ -4,7 +4,7 @@ setlocal EnableDelayedExpansion
 
 set "INSTALL_DIR=C:\BlockMachine"
 set "SCRIPT_DIR=%~dp0"
-set "SOURCE_EXE="
+set "SOURCE_DIR="
 
 echo ========================================
 echo   Block Machine - Instalador
@@ -17,22 +17,21 @@ if /I "%~1"=="--build" set "DO_BUILD=1"
 
 if "%DO_BUILD%"=="1" call :BuildProject
 
-call :FindExecutable
+call :FindPublishFolder
 
-if not defined SOURCE_EXE (
-    echo [ERROR] No se encontró BlockMachine.exe
+if not defined SOURCE_DIR (
+    echo [ERROR] No se encontró la carpeta de publicación con BlockMachine.exe
     echo.
     echo Prueba una de estas opciones:
     echo   instalar.bat --compilar
-    echo   dotnet publish src/BlockMachine -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
-    echo   Coloca BlockMachine.exe en la misma carpeta que instalar.bat
+    echo   Coloca la carpeta publish junto a instalar.bat
     echo.
     pause
     exit /b 1
 )
 
-echo Origen:  !SOURCE_EXE!
-echo Destino: %INSTALL_DIR%\BlockMachine.exe
+echo Origen:  !SOURCE_DIR!
+echo Destino: %INSTALL_DIR%\
 echo.
 
 if not exist "%INSTALL_DIR%" (
@@ -45,10 +44,16 @@ if not exist "%INSTALL_DIR%" (
     )
 )
 
-echo Copiando ejecutable...
-copy /Y "!SOURCE_EXE!" "%INSTALL_DIR%\BlockMachine.exe" >nul
+echo Copiando archivos ^(exe + librerías necesarias^)...
+xcopy /Y /E /I /Q "!SOURCE_DIR!\*" "%INSTALL_DIR%\" >nul
 if errorlevel 1 (
-    echo [ERROR] No se pudo copiar el archivo.
+    echo [ERROR] No se pudieron copiar los archivos.
+    pause
+    exit /b 1
+)
+
+if not exist "%INSTALL_DIR%\BlockMachine.exe" (
+    echo [ERROR] BlockMachine.exe no quedó en la carpeta de instalación.
     pause
     exit /b 1
 )
@@ -69,27 +74,23 @@ pause
 start "" "%INSTALL_DIR%\BlockMachine.exe"
 exit /b 0
 
-:FindExecutable
-set "SOURCE_EXE="
-
-if exist "%SCRIPT_DIR%BlockMachine.exe" (
-    set "SOURCE_EXE=%SCRIPT_DIR%BlockMachine.exe"
-    goto :eof
-)
+:FindPublishFolder
+set "SOURCE_DIR="
 
 if exist "%SCRIPT_DIR%publish\BlockMachine.exe" (
-    set "SOURCE_EXE=%SCRIPT_DIR%publish\BlockMachine.exe"
+    set "SOURCE_DIR=%SCRIPT_DIR%publish"
     goto :eof
 )
 
 if exist "%SCRIPT_DIR%src\BlockMachine\bin\Release\net10.0-windows\win-x64\publish\BlockMachine.exe" (
-    set "SOURCE_EXE=%SCRIPT_DIR%src\BlockMachine\bin\Release\net10.0-windows\win-x64\publish\BlockMachine.exe"
+    set "SOURCE_DIR=%SCRIPT_DIR%src\BlockMachine\bin\Release\net10.0-windows\win-x64\publish"
     goto :eof
 )
 
-if exist "%SCRIPT_DIR%src\BlockMachine\bin\Debug\net10.0-windows\BlockMachine.exe" (
-    echo [AVISO] Usando compilación Debug. Para la PC de producción usa --compilar.
-    set "SOURCE_EXE=%SCRIPT_DIR%src\BlockMachine\bin\Debug\net10.0-windows\BlockMachine.exe"
+REM Compatibilidad: solo un exe suelto (versiones antiguas)
+if exist "%SCRIPT_DIR%BlockMachine.exe" (
+    set "SOURCE_DIR=%SCRIPT_DIR%"
+    goto :eof
 )
 
 goto :eof
@@ -100,11 +101,11 @@ echo.
 
 where dotnet >nul 2>&1
 if errorlevel 1 (
-    echo [ERROR] No se encontró dotnet. Instala .NET SDK o copia BlockMachine.exe manualmente.
+    echo [ERROR] No se encontró dotnet. Instala .NET SDK o copia la carpeta publish manualmente.
     exit /b 1
 )
 
-dotnet publish "%SCRIPT_DIR%src\BlockMachine\BlockMachine.csproj" -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
+dotnet publish "%SCRIPT_DIR%src\BlockMachine\BlockMachine.csproj" -c Release
 if errorlevel 1 (
     echo [ERROR] La compilación falló.
     exit /b 1
